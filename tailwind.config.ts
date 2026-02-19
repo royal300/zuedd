@@ -13,8 +13,16 @@ export default {
       },
     },
     extend: {
-      colors: {
-        border: "hsl(var(--border))",
+        fontFamily: {
+          display: ['"Bebas Neue"', 'sans-serif'],
+          body: ['"Inter"', 'sans-serif'],
+        },
+        colors: {
+          gold: "hsl(var(--gold))",
+          "gold-light": "hsl(var(--gold-light))",
+          "gold-dark": "hsl(var(--gold-dark))",
+          obsidian: "hsl(var(--obsidian))",
+          border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
