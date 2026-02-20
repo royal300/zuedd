@@ -1,12 +1,14 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Menu, X, MessageCircle } from 'lucide-react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 import logo from '@/assets/logo.png';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const { totalItems } = useCart();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -33,12 +35,12 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
+          {/* Logo — increased size */}
           <Link to="/" className="flex items-center gap-3 group">
             <img
               src={logo}
-              alt="UED"
-              className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              alt="ZUED"
+              className="h-14 lg:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
           </Link>
 
@@ -64,24 +66,28 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* WhatsApp CTA */}
-          <a
-            href="https://wa.me/918617201731"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-2 btn-gold px-4 py-2 rounded-sm text-xs"
-          >
-            <MessageCircle size={14} />
-            WhatsApp Us
-          </a>
+          {/* Cart + Mobile Toggle */}
+          <div className="flex items-center gap-4">
+            <Link
+              to="/cart"
+              className="relative flex items-center gap-2 btn-gold px-4 py-2 rounded-sm text-xs"
+            >
+              <ShoppingCart size={14} />
+              <span className="hidden md:inline">Cart</span>
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-destructive text-foreground text-[10px] font-bold flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
 
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden text-foreground/80 hover:text-gold transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+            <button
+              className="md:hidden text-foreground/80 hover:text-gold transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -101,15 +107,6 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
-            <a
-              href="https://wa.me/918617201731"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 btn-gold px-4 py-3 rounded-sm w-full text-xs mt-4"
-            >
-              <MessageCircle size={14} />
-              WhatsApp Us
-            </a>
           </div>
         </div>
       )}

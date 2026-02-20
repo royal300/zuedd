@@ -22,7 +22,7 @@ const TShirts = () => {
       <section className="relative pt-24 pb-16 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-gold/5 to-transparent pointer-events-none" />
         <div className="absolute top-20 right-0 w-72 h-72 rounded-full bg-gold/5 blur-[100px] pointer-events-none" />
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-6xl mx-auto text-center">
           <p className="text-gold text-[10px] tracking-[0.5em] uppercase mb-4 animate-fade-in">
             Print on Demand
           </p>
@@ -45,7 +45,7 @@ const TShirts = () => {
 
       {/* Category Filter */}
       <section className="px-4 mb-10">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="flex flex-wrap gap-2 justify-center">
             {categories.map((cat) => (
               <button
@@ -66,7 +66,7 @@ const TShirts = () => {
 
       {/* Product Grid */}
       <section className="px-4 pb-20">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
             {filtered.map((product, i) => (
               <div
