@@ -4,28 +4,28 @@ import jewelleryHero from '@/assets/jewellery-hero.jpg';
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center relative overflow-hidden noise-texture">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center relative overflow-hidden noise-texture py-24">
       <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gold/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-gold/5 blur-[120px] pointer-events-none" />
 
-      <div className="text-center mb-12 lg:mb-16 animate-fade-in-up px-4">
-        <p className="text-muted-foreground text-xs tracking-[0.4em] uppercase mb-4">
+      <div className="text-center mb-8 lg:mb-10 animate-fade-in-up px-4">
+        <p className="text-muted-foreground text-xs tracking-[0.4em] uppercase mb-3">
           Premium Collections
         </p>
-        <h1 className="font-display text-5xl sm:text-7xl lg:text-8xl xl:text-9xl gold-gradient-text leading-none">
+        <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl xl:text-8xl gold-gradient-text leading-none">
           ZUED
         </h1>
-        <p className="text-foreground/60 text-sm tracking-[0.3em] uppercase mt-4">
+        <p className="text-foreground/60 text-sm tracking-[0.3em] uppercase mt-3">
           Wear The Difference.
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-6 lg:gap-8 px-4 sm:px-6 w-full max-w-4xl xl:max-w-5xl">
+      <div className="flex flex-col sm:flex-row gap-5 lg:gap-6 px-4 sm:px-6 w-full max-w-3xl xl:max-w-4xl">
         {/* T-Shirts Card */}
         <Link
           to="/tshirts"
           className="group relative flex-1 rounded-lg overflow-hidden cursor-pointer animate-fade-in-up delay-200"
-          style={{ minHeight: '420px' }}
+          style={{ minHeight: '360px' }}
         >
           <img src={tshirtHero} alt="T-Shirts" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
@@ -47,7 +47,7 @@ const Landing = () => {
         <Link
           to="/jewellery"
           className="group relative flex-1 rounded-lg overflow-hidden cursor-pointer animate-fade-in-up delay-400"
-          style={{ minHeight: '420px' }}
+          style={{ minHeight: '360px' }}
         >
           <img src={jewelleryHero} alt="Jewellery" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
@@ -66,7 +66,7 @@ const Landing = () => {
         </Link>
       </div>
 
-      <div className="mt-12 text-center animate-fade-in delay-500 px-4">
+      <div className="mt-8 text-center animate-fade-in delay-500 px-4">
         <div className="flex items-center gap-4 justify-center">
           <div className="h-px w-12 bg-gradient-to-r from-transparent to-gold/50" />
           <p className="text-muted-foreground text-[10px] tracking-[0.4em] uppercase">Premium · Authentic · Exclusive</p>
