@@ -40,7 +40,7 @@ const Header = () => {
             <img
               src={logo}
               alt="ZUED"
-              className="h-14 lg:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              className="h-16 lg:h-20 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
           </Link>
 
