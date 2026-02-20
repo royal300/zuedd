@@ -1,40 +1,52 @@
+import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, MessageCircle, Star } from 'lucide-react';
+import { ArrowLeft, Star, ShoppingCart, Play } from 'lucide-react';
 import { jewelleryProducts } from '@/data/products';
 import { getProductImage } from '@/components/ProductCard';
+import { useCart } from '@/context/CartContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { toast } from 'sonner';
+import jewelleryVideo from '@/assets/jewellery-video.mp4';
 
 const JewelleryDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const product = jewelleryProducts.find((p) => p.id === id);
+  const [activeImage, setActiveImage] = useState(0);
+  const [showVideo, setShowVideo] = useState(false);
 
   if (!product) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <p className="text-muted-foreground mb-4">Product not found</p>
-          <Link to="/jewellery" className="btn-gold px-6 py-3 rounded-sm text-sm">
-            Back to Jewellery
-          </Link>
+          <Link to="/jewellery" className="btn-gold px-6 py-3 rounded-sm text-sm">Back to Jewellery</Link>
         </div>
       </div>
     );
   }
 
-  const whatsappMessage = encodeURIComponent(
-    `Hello, I am interested in this Jewellery item.\n\nProduct: ${product.name}\nCategory: ${product.category}\nPrice: ${product.price}\n\nPlease share more details. Thank you!`
-  );
+  const price = parseInt(product.price.replace(/[₹,]/g, ''));
 
-  const whatsappUrl = `https://wa.me/918617201731?text=${whatsappMessage}`;
+  const handleAddToCart = () => {
+    addToCart({
+      productId: product.id,
+      productType: 'jewellery',
+      name: product.name,
+      price,
+      image: product.image,
+      quantity: 1,
+    });
+    toast.success(`${product.name} added to cart!`);
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="pt-24 pb-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Back */}
+        <div className="max-w-5xl mx-auto">
           <button
             onClick={() => navigate('/jewellery')}
             className="flex items-center gap-2 text-muted-foreground hover:text-gold text-xs tracking-wider uppercase mb-8 transition-colors group"
@@ -43,30 +55,61 @@ const JewelleryDetail = () => {
             Back to Jewellery
           </button>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-            {/* Image */}
-            <div className="relative">
-              <div className="aspect-square rounded-sm overflow-hidden gold-border-glow">
-                <img
-                  src={getProductImage(product.image)}
-                  alt={product.name}
-                  className="w-full h-full object-cover animate-scale-in"
-                />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
+            {/* Gallery */}
+            <div className="space-y-3">
+              <div className="relative aspect-square rounded-sm overflow-hidden gold-border-glow">
+                {showVideo ? (
+                  <video
+                    src={jewelleryVideo}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    src={getProductImage(product.gallery[activeImage])}
+                    alt={product.name}
+                    className="w-full h-full object-cover animate-scale-in"
+                  />
+                )}
+                {product.badge && (
+                  <div className="absolute top-4 left-4 gradient-gold-bg text-background text-[10px] font-bold tracking-[0.2em] uppercase px-3 py-1.5 rounded-sm">
+                    {product.badge}
+                  </div>
+                )}
               </div>
-              {/* Gold shimmer effect overlay */}
-              <div className="absolute inset-0 rounded-sm bg-gradient-to-tr from-transparent via-gold/5 to-transparent pointer-events-none" />
-              {product.badge && (
-                <div className="absolute top-4 left-4 gradient-gold-bg text-background text-[10px] font-bold tracking-[0.2em] uppercase px-3 py-1.5 rounded-sm">
-                  {product.badge}
-                </div>
-              )}
+              <div className="flex gap-2">
+                {product.gallery.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { setActiveImage(i); setShowVideo(false); }}
+                    className={`w-20 h-20 rounded-sm overflow-hidden border-2 transition-all ${
+                      !showVideo && activeImage === i ? 'border-gold shadow-[0_0_10px_hsl(43,74%,49%,0.4)]' : 'border-border hover:border-gold/50'
+                    }`}
+                  >
+                    <img src={getProductImage(img)} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+                <button
+                  onClick={() => setShowVideo(true)}
+                  className={`w-20 h-20 rounded-sm overflow-hidden border-2 transition-all relative bg-secondary flex items-center justify-center ${
+                    showVideo ? 'border-gold shadow-[0_0_10px_hsl(43,74%,49%,0.4)]' : 'border-border hover:border-gold/50'
+                  }`}
+                >
+                  <Play size={20} className="text-gold" fill="currentColor" />
+                  <span className="absolute bottom-1 text-[8px] text-muted-foreground">5s</span>
+                </button>
+              </div>
             </div>
 
             {/* Details */}
-            <div className="flex flex-col gap-6 animate-fade-in-up">
+            <div className="flex flex-col gap-5 animate-fade-in-up">
               <div>
                 <p className="text-gold text-[10px] tracking-[0.4em] uppercase font-semibold mb-2">{product.category}</p>
-                <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl text-foreground tracking-wider leading-none mb-3">
+                <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl text-foreground tracking-wider leading-none mb-3">
                   {product.name.toUpperCase()}
                 </h1>
                 <p className="text-muted-foreground text-sm leading-relaxed">{product.description}</p>
@@ -74,16 +117,14 @@ const JewelleryDetail = () => {
 
               <div className="h-px bg-gradient-to-r from-gold/30 to-transparent" />
 
-              {/* Price */}
               <div>
                 <p className="text-muted-foreground text-xs tracking-wider uppercase mb-1">Price</p>
                 <p className="gold-gradient-text font-display text-3xl">{product.price}</p>
               </div>
 
-              {/* Features */}
               <div className="glass-card rounded-sm p-5 space-y-3">
                 {[
-                  '18K Gold Plating — Premium finish that lasts',
+                  'Anti-Tarnish Coating — Premium finish that lasts',
                   'Hypoallergenic Materials — Safe for all skin types',
                   'Handcrafted Quality — Each piece inspected individually',
                   'Luxury Packaging — Gift-ready presentation',
@@ -97,16 +138,13 @@ const JewelleryDetail = () => {
 
               <div className="h-px bg-gradient-to-r from-gold/30 to-transparent" />
 
-              {/* CTA */}
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={handleAddToCart}
                 className="btn-gold flex items-center justify-center gap-3 py-4 rounded-sm text-sm w-full"
               >
-                <MessageCircle size={18} />
-                Enquire on WhatsApp
-              </a>
+                <ShoppingCart size={18} />
+                Add to Cart — {product.price}
+              </button>
 
               <p className="text-muted-foreground text-xs text-center tracking-wider">
                 Limited stock available · Enquire to confirm availability

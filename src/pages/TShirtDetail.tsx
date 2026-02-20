@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, MessageCircle, Check } from 'lucide-react';
+import { ArrowLeft, Check, ShoppingCart, Play } from 'lucide-react';
 import { tshirtProducts } from '@/data/products';
 import { getProductImage } from '@/components/ProductCard';
+import { useCart } from '@/context/CartContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { toast } from 'sonner';
+import tshirtVideo from '@/assets/tshirt-video.mp4';
 
 const colorSwatches: Record<string, string> = {
   Black: '#0a0a0a',
@@ -17,37 +20,61 @@ const colorSwatches: Record<string, string> = {
 const TShirtDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const product = tshirtProducts.find((p) => p.id === id);
 
   const [selectedSize, setSelectedSize] = useState('M');
   const [selectedGsm, setSelectedGsm] = useState('240 GSM');
   const [selectedColor, setSelectedColor] = useState('Black');
+  const [activeImage, setActiveImage] = useState(0);
+  const [showVideo, setShowVideo] = useState(false);
 
   if (!product) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <p className="text-muted-foreground mb-4">Product not found</p>
-          <Link to="/tshirts" className="btn-gold px-6 py-3 rounded-sm text-sm">
-            Back to T-Shirts
-          </Link>
+          <Link to="/tshirts" className="btn-gold px-6 py-3 rounded-sm text-sm">Back to T-Shirts</Link>
         </div>
       </div>
     );
   }
 
-  const whatsappMessage = encodeURIComponent(
-    `Hello, I want to book this T-Shirt.\n\nProduct: ${product.name}\nSize: ${selectedSize}\nGSM: ${selectedGsm}\nColor: ${selectedColor}\n\nPlease confirm availability and pricing. Thank you!`
-  );
+  // Dynamic pricing for ts-001
+  const isDynamic = !!product.dynamicPricing;
+  const currentPrice = isDynamic && product.dynamicPricing?.[selectedGsm]?.[selectedSize]
+    ? product.dynamicPricing[selectedGsm][selectedSize]
+    : parseInt(product.price.replace(/[₹,]/g, ''));
 
-  const whatsappUrl = `https://wa.me/918617201731?text=${whatsappMessage}`;
+  // Dynamic image for ts-001 based on color
+  const currentMainImage = isDynamic && product.colorImages?.[selectedColor]
+    ? product.colorImages[selectedColor]
+    : product.gallery[activeImage] || product.image;
+
+  const galleryImages = isDynamic && product.colorImages?.[selectedColor]
+    ? [product.colorImages[selectedColor], ...product.gallery.filter(g => g !== product.colorImages![selectedColor]).slice(0, 2)]
+    : product.gallery;
+
+  const handleAddToCart = () => {
+    addToCart({
+      productId: product.id,
+      productType: 'tshirt',
+      name: product.name,
+      price: currentPrice,
+      image: currentMainImage,
+      quantity: 1,
+      size: selectedSize,
+      gsm: selectedGsm,
+      color: selectedColor,
+    });
+    toast.success(`${product.name} added to cart!`);
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="pt-24 pb-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Breadcrumb */}
+        <div className="max-w-5xl mx-auto">
           <button
             onClick={() => navigate('/tshirts')}
             className="flex items-center gap-2 text-muted-foreground hover:text-gold text-xs tracking-wider uppercase mb-8 transition-colors group"
@@ -56,28 +83,63 @@ const TShirtDetail = () => {
             Back to T-Shirts
           </button>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-            {/* Image */}
-            <div className="relative">
-              <div className="aspect-square rounded-sm overflow-hidden gold-border-glow">
-                <img
-                  src={getProductImage(product.image)}
-                  alt={product.name}
-                  className="w-full h-full object-cover animate-scale-in"
-                />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
+            {/* Gallery */}
+            <div className="space-y-3">
+              <div className="relative aspect-square rounded-sm overflow-hidden gold-border-glow">
+                {showVideo ? (
+                  <video
+                    src={tshirtVideo}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    src={getProductImage(activeImage === 0 ? currentMainImage : galleryImages[activeImage])}
+                    alt={product.name}
+                    className="w-full h-full object-cover animate-scale-in"
+                  />
+                )}
+                {product.badge && (
+                  <div className="absolute top-4 left-4 gradient-gold-bg text-background text-[10px] font-bold tracking-[0.2em] uppercase px-3 py-1.5 rounded-sm">
+                    {product.badge}
+                  </div>
+                )}
               </div>
-              {product.badge && (
-                <div className="absolute top-4 left-4 gradient-gold-bg text-background text-[10px] font-bold tracking-[0.2em] uppercase px-3 py-1.5 rounded-sm">
-                  {product.badge}
-                </div>
-              )}
+              {/* Thumbnails */}
+              <div className="flex gap-2">
+                {galleryImages.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { setActiveImage(i); setShowVideo(false); }}
+                    className={`w-20 h-20 rounded-sm overflow-hidden border-2 transition-all ${
+                      !showVideo && activeImage === i ? 'border-gold shadow-[0_0_10px_hsl(43,74%,49%,0.4)]' : 'border-border hover:border-gold/50'
+                    }`}
+                  >
+                    <img src={getProductImage(img)} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+                {/* Video thumb */}
+                <button
+                  onClick={() => setShowVideo(true)}
+                  className={`w-20 h-20 rounded-sm overflow-hidden border-2 transition-all relative bg-secondary flex items-center justify-center ${
+                    showVideo ? 'border-gold shadow-[0_0_10px_hsl(43,74%,49%,0.4)]' : 'border-border hover:border-gold/50'
+                  }`}
+                >
+                  <Play size={20} className="text-gold" fill="currentColor" />
+                  <span className="absolute bottom-1 text-[8px] text-muted-foreground">5s</span>
+                </button>
+              </div>
             </div>
 
             {/* Details */}
-            <div className="flex flex-col gap-6 animate-fade-in-up">
+            <div className="flex flex-col gap-5 animate-fade-in-up">
               <div>
                 <p className="text-gold text-[10px] tracking-[0.4em] uppercase font-semibold mb-2">{product.category}</p>
-                <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl text-foreground tracking-wider leading-none mb-3">
+                <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl text-foreground tracking-wider leading-none mb-3">
                   {product.name.toUpperCase()}
                 </h1>
                 <p className="text-muted-foreground text-sm leading-relaxed">{product.description}</p>
@@ -88,12 +150,13 @@ const TShirtDetail = () => {
               {/* Price */}
               <div>
                 <p className="text-muted-foreground text-xs tracking-wider uppercase mb-1">Price</p>
-                <p className="gold-gradient-text font-display text-3xl">{product.price}</p>
+                <p className="gold-gradient-text font-display text-3xl">₹{currentPrice.toLocaleString()}</p>
+                {isDynamic && <p className="text-muted-foreground text-[10px] mt-1">Price varies by size & GSM</p>}
               </div>
 
               {/* Size */}
               <div>
-                <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase mb-3">
+                <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase mb-2">
                   Size: <span className="text-foreground">{selectedSize}</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -101,10 +164,10 @@ const TShirtDetail = () => {
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`w-12 h-12 rounded-sm text-sm font-semibold tracking-wider transition-all duration-200 ${
+                      className={`w-11 h-11 rounded-sm text-sm font-semibold tracking-wider transition-all duration-200 ${
                         selectedSize === size
                           ? 'gradient-gold-bg text-background shadow-[0_0_15px_hsl(43,74%,49%,0.4)]'
-                          : 'bg-secondary border border-border text-foreground/70 hover:border-gold/50 hover:text-foreground'
+                          : 'bg-secondary border border-border text-foreground/70 hover:border-gold/50'
                       }`}
                     >
                       {size}
@@ -115,7 +178,7 @@ const TShirtDetail = () => {
 
               {/* GSM */}
               <div>
-                <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase mb-3">
+                <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase mb-2">
                   GSM: <span className="text-foreground">{selectedGsm}</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -126,7 +189,7 @@ const TShirtDetail = () => {
                       className={`px-4 py-2 rounded-sm text-xs font-semibold tracking-wider transition-all duration-200 ${
                         selectedGsm === g
                           ? 'gradient-gold-bg text-background shadow-[0_0_15px_hsl(43,74%,49%,0.4)]'
-                          : 'bg-secondary border border-border text-foreground/70 hover:border-gold/50 hover:text-foreground'
+                          : 'bg-secondary border border-border text-foreground/70 hover:border-gold/50'
                       }`}
                     >
                       {g}
@@ -137,14 +200,14 @@ const TShirtDetail = () => {
 
               {/* Color */}
               <div>
-                <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase mb-3">
+                <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase mb-2">
                   Color: <span className="text-foreground">{selectedColor}</span>
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {product.colors.map((color) => (
                     <button
                       key={color}
-                      onClick={() => setSelectedColor(color)}
+                      onClick={() => { setSelectedColor(color); setActiveImage(0); setShowVideo(false); }}
                       title={color}
                       className={`relative w-9 h-9 rounded-full border-2 transition-all duration-200 ${
                         selectedColor === color
@@ -154,10 +217,7 @@ const TShirtDetail = () => {
                       style={{ backgroundColor: colorSwatches[color] || '#888' }}
                     >
                       {selectedColor === color && (
-                        <Check
-                          size={14}
-                          className={`absolute inset-0 m-auto ${color === 'White' ? 'text-background' : 'text-foreground'}`}
-                        />
+                        <Check size={14} className={`absolute inset-0 m-auto ${color === 'White' ? 'text-background' : 'text-foreground'}`} />
                       )}
                     </button>
                   ))}
@@ -167,15 +227,13 @@ const TShirtDetail = () => {
               <div className="h-px bg-gradient-to-r from-gold/30 to-transparent" />
 
               {/* CTA */}
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={handleAddToCart}
                 className="btn-gold flex items-center justify-center gap-3 py-4 rounded-sm text-sm w-full"
               >
-                <MessageCircle size={18} />
-                Book Now on WhatsApp
-              </a>
+                <ShoppingCart size={18} />
+                Add to Cart — ₹{currentPrice.toLocaleString()}
+              </button>
 
               <p className="text-muted-foreground text-xs text-center tracking-wider">
                 Made to order · Ships in 5–7 business days

@@ -18,7 +18,6 @@ const Jewellery = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero Banner */}
       <section className="relative pt-24 pb-16 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-gold/5 to-transparent pointer-events-none" />
         <div className="absolute top-20 left-0 w-72 h-72 rounded-full bg-gold/8 blur-[100px] pointer-events-none" />
@@ -27,7 +26,7 @@ const Jewellery = () => {
             Luxury Collection
           </p>
           <h1 className="font-display text-5xl sm:text-7xl lg:text-8xl text-foreground tracking-wider animate-fade-in-up">
-            GOLD
+            ANTI TARNISH
             <span className="block gold-gradient-text">JEWELLERY</span>
           </h1>
           <p className="text-muted-foreground text-sm tracking-wider max-w-md mx-auto mt-4 animate-fade-in delay-200">
@@ -43,7 +42,6 @@ const Jewellery = () => {
         </div>
       </section>
 
-      {/* Category Filter */}
       <section className="px-4 mb-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap gap-2 justify-center">
@@ -52,9 +50,7 @@ const Jewellery = () => {
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={`px-5 py-2 rounded-sm text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 ${
-                  activeCategory === cat
-                    ? 'btn-gold'
-                    : 'btn-outline-gold'
+                  activeCategory === cat ? 'btn-gold' : 'btn-outline-gold'
                 }`}
               >
                 {cat}
@@ -64,7 +60,6 @@ const Jewellery = () => {
         </div>
       </section>
 
-      {/* Product Grid */}
       <section className="px-4 pb-20">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
