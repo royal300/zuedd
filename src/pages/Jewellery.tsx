@@ -1,18 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { jewelleryProducts } from '@/data/products';
 import { JewelleryCard } from '@/components/ProductCard';
+import ApiProductCard from '@/components/ApiProductCard';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-const categories = ['All', 'Earrings', 'Rings', 'Chains', 'Pendants'] as const;
-type Category = typeof categories[number];
-
 const Jewellery = () => {
-  const [activeCategory, setActiveCategory] = useState<Category>('All');
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [apiProducts, setApiProducts] = useState<any[]>([]);
+  const [apiCategories, setApiCategories] = useState<any[]>([]);
 
-  const filtered = activeCategory === 'All'
+  const staticCats = ['All', 'Earrings', 'Rings', 'Chains', 'Pendants'];
+
+  useEffect(() => {
+    fetch('/api/products?type=jewellery')
+      .then(r => r.ok ? r.json() : [])
+      .then(d => setApiProducts(Array.isArray(d) ? d : []))
+      .catch(() => { });
+
+    fetch('/api/categories')
+      .then(r => r.ok ? r.json() : [])
+      .then(d => setApiCategories(Array.isArray(d) ? d : []))
+      .catch(() => { });
+  }, []);
+
+  const apiCatNames = apiCategories
+    .filter(c => c.product_type === 'jewellery' || c.product_type === 'all')
+    .map(c => c.name);
+  const extraCats = apiCatNames.filter(n => !staticCats.includes(n));
+  const allCategories = [...staticCats, ...extraCats];
+
+  const filteredStatic = activeCategory === 'All'
     ? jewelleryProducts
-    : jewelleryProducts.filter((p) => p.category === activeCategory);
+    : jewelleryProducts.filter(p => p.category === activeCategory);
+
+  const filteredApi = apiProducts.filter(p => {
+    if (activeCategory === 'All') return true;
+    return p.category_name === activeCategory;
+  });
+
+  const totalCount = jewelleryProducts.length + apiProducts.length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -34,24 +61,22 @@ const Jewellery = () => {
           </p>
           <div className="flex items-center gap-4 justify-center mt-6 animate-fade-in delay-300">
             <div className="h-px w-16 bg-gradient-to-r from-transparent to-gold/50" />
-            <span className="text-gold text-[10px] tracking-[0.4em] uppercase">
-              {jewelleryProducts.length} Pieces
-            </span>
+            <span className="text-gold text-[10px] tracking-[0.4em] uppercase">{totalCount} Pieces</span>
             <div className="h-px w-16 bg-gradient-to-l from-transparent to-gold/50" />
           </div>
         </div>
       </section>
 
+      {/* Category Filter */}
       <section className="px-4 mb-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap gap-2 justify-center">
-            {categories.map((cat) => (
+            {allCategories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-2 rounded-sm text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 ${
-                  activeCategory === cat ? 'btn-gold' : 'btn-outline-gold'
-                }`}
+                className={`px-5 py-2 rounded-sm text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 ${activeCategory === cat ? 'btn-gold' : 'btn-outline-gold'
+                  }`}
               >
                 {cat}
               </button>
@@ -60,19 +85,24 @@ const Jewellery = () => {
         </div>
       </section>
 
+      {/* Product Grid */}
       <section className="px-4 pb-20">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-            {filtered.map((product, i) => (
-              <div
-                key={product.id}
-                className="animate-fade-in-up"
-                style={{ animationDelay: `${i * 0.08}s`, opacity: 0, animationFillMode: 'forwards' }}
-              >
+            {filteredStatic.map((product, i) => (
+              <div key={product.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.08}s`, opacity: 0, animationFillMode: 'forwards' }}>
                 <JewelleryCard product={product} />
               </div>
             ))}
+            {filteredApi.map((product, i) => (
+              <div key={`api-${product.id}`} className="animate-fade-in-up" style={{ animationDelay: `${(filteredStatic.length + i) * 0.08}s`, opacity: 0, animationFillMode: 'forwards' }}>
+                <ApiProductCard product={product} type="jewellery" />
+              </div>
+            ))}
           </div>
+          {filteredStatic.length === 0 && filteredApi.length === 0 && (
+            <p className="text-center text-muted-foreground text-sm py-16">No products in this category.</p>
+          )}
         </div>
       </section>
 

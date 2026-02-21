@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import tshirtHero from '@/assets/tshirt-hero.jpg';
 import jewelleryHero from '@/assets/jewellery-hero.jpg';
+import mainLogo from '@/assets/index_logo.png';
 
 const Landing = () => {
   return (
@@ -8,16 +9,27 @@ const Landing = () => {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gold/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-gold/5 blur-[120px] pointer-events-none" />
 
-      <div className="text-center mb-8 lg:mb-10 animate-fade-in-up px-4">
-        <p className="text-muted-foreground text-xs tracking-[0.4em] uppercase mb-3">
+      <div className="text-center mb-12 lg:mb-16 animate-fade-in-up px-4 flex flex-col items-center">
+        <div className="mb-8 p-4">
+          <img
+            src={mainLogo}
+            alt="ZUED Logo"
+            className="h-16 md:h-20 lg:h-24 object-contain animate-fade-in"
+          />
+        </div>
+
+        <p className="text-muted-foreground text-[10px] tracking-[0.5em] uppercase mb-4 opacity-70">
           Premium Collections
         </p>
-        <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl xl:text-8xl gold-gradient-text leading-none">
-          ZUED
-        </h1>
-        <p className="text-foreground/60 text-sm tracking-[0.3em] uppercase mt-3">
-          Wear The Difference.
-        </p>
+
+        <div className="space-y-4">
+          <h1 className="font-display text-5xl sm:text-7xl lg:text-8xl gold-gradient-text leading-none tracking-tighter">
+            ZUED
+          </h1>
+          <p className="text-foreground/40 text-xs sm:text-sm tracking-[0.4em] uppercase font-light">
+            Wear The Difference.
+          </p>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-5 lg:gap-6 px-4 sm:px-6 w-full max-w-3xl xl:max-w-4xl">

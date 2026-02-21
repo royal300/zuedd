@@ -1,19 +1,35 @@
-import { Link, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { Menu, X, ShoppingCart } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Menu, X, ShoppingCart, User, LogOut, ChevronDown } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import logo from '@/assets/logo.png';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { totalItems } = useCart();
+  const { isAuthenticated, user, logout } = useAuth();
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close user dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
   const navLinks = [
@@ -25,17 +41,22 @@ const Header = () => {
 
   const isActive = (to: string) => location.pathname === to;
 
+  const handleLogout = () => {
+    logout();
+    setUserMenuOpen(false);
+    navigate('/');
+  };
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
           ? 'bg-background/90 backdrop-blur-xl border-b border-border shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
           : 'bg-transparent'
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo — increased size */}
+          {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <img
               src={logo}
@@ -50,24 +71,23 @@ const Header = () => {
               <Link
                 key={link.label}
                 to={link.to}
-                className={`relative text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 group ${
-                  isActive(link.to)
+                className={`relative text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 group ${isActive(link.to)
                     ? 'text-gold'
                     : 'text-foreground/70 hover:text-foreground'
-                }`}
+                  }`}
               >
                 {link.label}
                 <span
-                  className={`absolute -bottom-1 left-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent transition-all duration-300 ${
-                    isActive(link.to) ? 'w-full opacity-100' : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-100'
-                  }`}
+                  className={`absolute -bottom-1 left-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent transition-all duration-300 ${isActive(link.to) ? 'w-full opacity-100' : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-100'
+                    }`}
                 />
               </Link>
             ))}
           </nav>
 
-          {/* Cart + Mobile Toggle */}
-          <div className="flex items-center gap-4">
+          {/* Right side: Cart + Auth */}
+          <div className="flex items-center gap-3">
+            {/* Cart */}
             <Link
               to="/cart"
               className="relative flex items-center gap-2 btn-gold px-4 py-2 rounded-sm text-xs"
@@ -81,6 +101,44 @@ const Header = () => {
               )}
             </Link>
 
+            {/* Auth button */}
+            {isAuthenticated ? (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="hidden md:flex items-center gap-2 text-xs text-foreground/80 hover:text-gold border border-border hover:border-gold/40 px-3 py-2 rounded-sm transition-all duration-300"
+                >
+                  <User size={13} />
+                  <span className="max-w-[100px] truncate">{user?.name || user?.email}</span>
+                  <ChevronDown size={11} className={`transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-background/95 backdrop-blur-xl border border-border rounded-sm shadow-xl animate-fade-in">
+                    <div className="px-4 py-3 border-b border-border">
+                      <p className="text-xs text-muted-foreground">Signed in as</p>
+                      <p className="text-sm text-foreground truncate mt-0.5">{user?.email}</p>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 w-full px-4 py-3 text-xs text-foreground/70 hover:text-destructive hover:bg-destructive/5 transition-colors"
+                    >
+                      <LogOut size={13} />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden md:flex items-center gap-2 text-xs text-foreground/70 hover:text-gold border border-border hover:border-gold/40 px-3 py-2 rounded-sm transition-all duration-300"
+              >
+                <User size={13} />
+                Sign In
+              </Link>
+            )}
+
+            {/* Mobile Toggle */}
             <button
               className="md:hidden text-foreground/80 hover:text-gold transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -100,13 +158,30 @@ const Header = () => {
                 key={link.label}
                 to={link.to}
                 onClick={() => setMobileOpen(false)}
-                className={`block text-sm font-semibold tracking-[0.2em] uppercase py-2 border-b border-border/50 transition-colors ${
-                  isActive(link.to) ? 'text-gold' : 'text-foreground/70 hover:text-gold'
-                }`}
+                className={`block text-sm font-semibold tracking-[0.2em] uppercase py-2 border-b border-border/50 transition-colors ${isActive(link.to) ? 'text-gold' : 'text-foreground/70 hover:text-gold'
+                  }`}
               >
                 {link.label}
               </Link>
             ))}
+            {isAuthenticated ? (
+              <button
+                onClick={() => { handleLogout(); setMobileOpen(false); }}
+                className="flex items-center gap-2 text-sm text-foreground/70 hover:text-destructive py-2 transition-colors w-full"
+              >
+                <LogOut size={14} />
+                Sign Out ({user?.name || user?.email})
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-2 text-sm text-foreground/70 hover:text-gold py-2 transition-colors"
+              >
+                <User size={14} />
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       )}
