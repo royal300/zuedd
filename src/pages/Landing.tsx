@@ -5,20 +5,20 @@ import mainLogo from '@/assets/index_logo.png';
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center relative overflow-hidden noise-texture py-24">
+    <div className="min-h-screen bg-background flex flex-col items-center relative overflow-hidden noise-texture pt-12 pb-24">
       <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gold/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-gold/5 blur-[120px] pointer-events-none" />
 
-      <div className="text-center mb-12 lg:mb-16 animate-fade-in-up px-4 flex flex-col items-center">
-        <div className="mb-8 p-4">
+      <div className="text-center mb-8 lg:mb-12 animate-fade-in-up px-4 flex flex-col items-center">
+        <div className="mb-6 p-2">
           <img
             src={mainLogo}
             alt="ZUED Logo"
-            className="h-16 md:h-20 lg:h-24 object-contain animate-fade-in"
+            className="h-24 md:h-32 lg:h-40 object-contain animate-fade-in"
           />
         </div>
 
-        <p className="text-muted-foreground text-[10px] tracking-[0.5em] uppercase mb-4 opacity-70">
+        <p className="text-muted-foreground text-[10px] tracking-[0.5em] uppercase mb-2 opacity-70">
           Premium Collections
         </p>
 
