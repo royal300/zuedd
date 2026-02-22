@@ -1,35 +1,33 @@
 import { Link } from 'react-router-dom';
 import tshirtHero from '@/assets/tshirt-hero.jpg';
 import jewelleryHero from '@/assets/jewellery-hero.jpg';
-import mainLogo from '@/assets/index_logo.png';
+import Header from '@/components/Header';
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center relative overflow-hidden noise-texture pt-12 pb-24">
+    <div className="min-h-screen bg-background flex flex-col items-center relative overflow-hidden noise-texture">
+      <Header />
       <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gold/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-gold/5 blur-[120px] pointer-events-none" />
 
-      <div className="text-center mb-8 lg:mb-12 animate-fade-in-up px-4 flex flex-col items-center">
-        <div className="mb-6 p-2">
+      <div className="text-center mb-8 lg:mb-12 animate-fade-in-up px-4 flex flex-col items-center pt-24 pb-24">
+        <div className="mb-6 flex justify-center">
           <img
-            src={mainLogo}
-            alt="ZUED Logo"
-            className="h-24 md:h-32 lg:h-40 object-contain animate-fade-in"
+            src="/zued-logo.png"
+            alt="ZUED - Wear The Difference"
+            className="h-28 sm:h-36 md:h-44 lg:h-52 w-auto max-w-[90vw] object-contain object-center animate-fade-in drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)]"
+            width={500}
+            height={250}
+            fetchPriority="high"
           />
         </div>
 
         <p className="text-muted-foreground text-[10px] tracking-[0.5em] uppercase mb-2 opacity-70">
           Premium Collections
         </p>
-
-        <div className="space-y-4">
-          <h1 className="font-display text-5xl sm:text-7xl lg:text-8xl gold-gradient-text leading-none tracking-tighter">
-            ZUED
-          </h1>
-          <p className="text-foreground/40 text-xs sm:text-sm tracking-[0.4em] uppercase font-light">
-            Wear The Difference.
-          </p>
-        </div>
+        <p className="text-foreground/60 text-sm sm:text-base tracking-[0.4em] uppercase font-light">
+          Wear The Difference.
+        </p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-5 lg:gap-6 px-4 sm:px-6 w-full max-w-3xl xl:max-w-4xl">

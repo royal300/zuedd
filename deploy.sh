@@ -40,7 +40,8 @@ scp -o StrictHostKeyChecking=no -r dist/* ${VPS_USER}@${VPS_HOST}:${VPS_WEB}/
 # Step 5: Upload + restart backend
 echo ""
 echo "[5/5] Uploading backend API and restarting PM2..."
-scp -o StrictHostKeyChecking=no api/server.js api/package.json api/.env ${VPS_USER}@${VPS_HOST}:${VPS_API}/
+scp -o StrictHostKeyChecking=no api/server.js api/package.json ${VPS_USER}@${VPS_HOST}:${VPS_API}/
+[ -f api/.env ] && scp -o StrictHostKeyChecking=no api/.env ${VPS_USER}@${VPS_HOST}:${VPS_API}/ || true
 ssh -o StrictHostKeyChecking=no ${VPS_USER}@${VPS_HOST} "cd ${VPS_API} && npm install --production && pm2 restart zued-api"
 
 echo ""

@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Menu, X, ShoppingCart, User, LogOut, ChevronDown } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
-import logo from '@/assets/logo.png';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -55,13 +54,16 @@ const Header = () => {
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+        <div className="flex items-center justify-between h-20 lg:h-28">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-3 group shrink-0">
             <img
-              src={logo}
-              alt="ZUED"
-              className="h-16 lg:h-20 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              src="/zued-logo.png"
+              alt="ZUED - Wear The Difference"
+              className="h-16 sm:h-20 lg:h-24 w-auto object-contain object-center transition-transform duration-300 group-hover:scale-105"
+              width={260}
+              height={130}
+              fetchPriority="high"
             />
           </Link>
 
