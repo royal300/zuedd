@@ -49,8 +49,8 @@ const Header = () => {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
-          ? 'bg-background/90 backdrop-blur-xl border-b border-border shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
-          : 'bg-transparent'
+        ? 'bg-background/90 backdrop-blur-xl border-b border-border shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
+        : 'bg-transparent'
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,9 +60,9 @@ const Header = () => {
             <img
               src="/zued-logo.png"
               alt="ZUED - Wear The Difference"
-              className="h-16 sm:h-20 lg:h-24 w-auto object-contain object-center transition-transform duration-300 group-hover:scale-105"
-              width={260}
-              height={130}
+              className="h-20 sm:h-24 lg:h-32 w-auto object-contain object-center transition-transform duration-300 group-hover:scale-105"
+              width={340}
+              height={170}
               fetchPriority="high"
             />
           </Link>
@@ -74,8 +74,8 @@ const Header = () => {
                 key={link.label}
                 to={link.to}
                 className={`relative text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 group ${isActive(link.to)
-                    ? 'text-gold'
-                    : 'text-foreground/70 hover:text-foreground'
+                  ? 'text-gold'
+                  : 'text-foreground/70 hover:text-foreground'
                   }`}
               >
                 {link.label}

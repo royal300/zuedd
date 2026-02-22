@@ -15,9 +15,9 @@ const Landing = () => {
           <img
             src="/zued-logo.png"
             alt="ZUED - Wear The Difference"
-            className="h-28 sm:h-36 md:h-44 lg:h-52 w-auto max-w-[90vw] object-contain object-center animate-fade-in drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)]"
-            width={500}
-            height={250}
+            className="h-32 sm:h-44 md:h-56 lg:h-64 w-auto max-w-[95vw] object-contain object-center animate-fade-in drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
+            width={700}
+            height={350}
             fetchPriority="high"
           />
         </div>
